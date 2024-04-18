@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Image Details</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+    <header>
+        <section>
+            <article>
+                <p>Galerie <span>Sport</span></p>
+            </article>
+            <article>
+                <input type="search" id="searchInput" placeholder="Rechercher une photo">
+            </article>
+            <article>
+                <select id="languageSelect">
+                    <option value="en">English</option>
+                    <option value="fr">Français</option>
+                </select>
+            </article>
+        </section>
+    </header>
+    <main>
+        <div>
+            <a href="index.html"><p>retour</p></a>
+        </div>
+        <div id="imageDetails"></div>
+    </main>
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            const params = new URLSearchParams(window.location.search);
+            const imageSrc = decodeURIComponent(params.get("image"));
+            const description = decodeURIComponent(params.get("description"));
+
+            const imageDetailsDiv = document.getElementById("imageDetails");
+            const img = document.createElement("img");
+            img.src = imageSrc;
+
+            const descriptionElement = document.createElement("p");
+            descriptionElement.textContent = description;
+            imageDetailsDiv.appendChild(descriptionElement);
+
+            // Créer un lien de téléchargement direct
+            const downloadLink = document.createElement("a");
+            downloadLink.textContent = "Télécharger l'image";
+            downloadLink.addEventListener("click", () => {
+                const xhr = new XMLHttpRequest();
+                xhr.responseType = "blob";
+                xhr.onload = () => {
+                    const blob = xhr.response;
+                    const url = URL.createObjectURL(blob);
+
+                    // Créer un lien de téléchargement avec le Blob
+                    const a = document.createElement("a");
+                    a.href = url;
+                    a.download = "image.jpg"; // Nom de fichier par défaut pour le téléchargement
+                    a.style.display = "none";
+                    document.body.appendChild(a);
+                    a.click();
+                    document.body.removeChild(a);
+                    URL.revokeObjectURL(url);
+                };
+                xhr.open("GET", imageSrc);
+                xhr.send();
+            });
+            imageDetailsDiv.appendChild(downloadLink);
+        });
+    </script>
+</body>
+
+</html>
